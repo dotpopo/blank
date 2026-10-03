@@ -15,6 +15,14 @@
 - **连接状态**: 已验证，anon key 有效，可正常访问该项目的 PostgREST/GoTrue 服务
 - **使用方式**: 在组件中 `import { supabase } from "@/lib/supabase"`（或相对路径），即可做增删改查和认证
 
+## Git / GitHub
+
+- **远程仓库**: `git@github.com:dotpopo/blank.git`（SSH 方式）
+- **默认分支**: `main`
+- **认证**: 沙箱内 SSH 密钥（`~/.ssh/id_ed25519`），公钥已添加到 GitHub 账号
+- **注意**: `.gitignore` 已排除 `node_modules/`、`dist/`、`.env`；`.env.example` 已提交
+- **沙箱注意**: git 操作需 `git config --global --add safe.directory /workspace`（已完成）
+
 ## 后续开发说明
 
 - 页面结构从 `src/App.tsx` 开始添加组件。
