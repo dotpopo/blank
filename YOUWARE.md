@@ -29,3 +29,16 @@
 - 可复用组件放 `src/components/`，页面放 `src/pages/`，状态管理放 `src/store/`。
 - 数据库表需先在 Supabase Dashboard → SQL Editor 中创建，anon key 无建表权限。
 - 构建命令：`npm run build`
+
+## 邀请码共享池（分支：`feat/invite-share-pool`）
+
+已实现「开门 OpenDoor」邀请码共享站点与审核能力：
+
+- **首页** `/`：搜索、分类筛选、邀请卡片、详情领取弹窗、分享提交弹窗（移植自原型 index.html）。
+- **审核台** `/admin`：待审/需修改/已通过/已驳回队列，支持通过、退回修改、驳回（退回/驳回必填原因）。
+- **数据层** `src/api/invites.ts`：配置了 Supabase 走数据库，未配置则回退 localStorage（当前为本地演示模式）。
+- **后端方案** `supabase/migrations/0001_moderation.sql`：表结构 + 状态机 + 去重索引 + 审计触发器 + 原子领取 RPC + RLS。
+- **设计文档** `docs/moderation-design.md`：审核分层架构、风险、RLS 清单、分阶段落地、待拍板决策点。
+- **别名**：已配置 `@/` → `src/`（vite + tsconfig）。
+
+上手：`npm install` → `npm run dev`。要接真实后端，请在 `.env` 填写 Supabase 凭据并在 Dashboard 执行迁移脚本。
