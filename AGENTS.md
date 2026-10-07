@@ -15,20 +15,20 @@
 - 分支: `feat/invite-pool`
 - spec **已冻结**。决策台账见 `docs/spec/invite-pool.spec.md` 第 10 节(10.1 已拍板 **11** 条)。
 - **T00 到 T11 全部落地。** 首页 / 贡献 / 大盘 / 管理后台四个页面都能用。
-- **已经接上真实数据库**。`0001_init.sql` 与 `0002_align_decisions.sql` 都已执行,
+- **已经接上真实数据库**。四个迁移都已执行: 0001(52 条命令) / 0002(17 条) / 0003(4 条) / 0004(2 条),
   开发填充数据在 `supabase/seed-demo.sql`。
 - 数据访问收敛在 `src/data/` 一个接缝: 环境变量齐就挂 Supabase 适配器,
   缺就退回演示适配器并在页头挂标记。**退回不是假装成功**, 页脚会写明当前数据源。
 - **管理员账号由用户自己建**(`supabase/seed-admin.sql`), 仓库里不放任何凭据。
 - e2e: `NODE_OPTIONS="" npx e2e run` → 18 个用例。后台完整流程走 `tools/verify-admin.cjs`。
   为什么分开, 见 `docs/spec/testing.md`。
-- 三个迁移都已在 Supabase 执行: 0001(52 条命令) / 0002(17 条) / 0003(4 条)。
+- 四个迁移都已在 Supabase 执行: 0001(52 条命令) / 0002(17 条) / 0003(4 条) / 0004(2 条)。
 - **`vite.config.ts` 里有一道 `VITE_` 白名单**: 只有 `VITE_SUPABASE_URL` 与
   `VITE_SUPABASE_ANON_KEY` 能进前端产物, 其余 `VITE_` 变量一律 define 成 `undefined`。
   新增前端可用的 `VITE_` 变量必须显式加白名单。
 - 用户侧还剩两件(我做不了): 给 `VITE_SUPABASE_SERVICE_ROLE` 与 `VITE_SUPABASE_YOUWARE_CONN`
   改名去掉 `VITE_` 前缀(白名单已经兜住了, 但改名才是根治);
-  以及跑 `supabase/seed-admin.sql` 建他自己的管理员账号。
+  以及建管理员账号(已由他自己完成, 用户名 `admin`, 他的口令我没有也不该有)。
 
 ## 设计读法与三个旋钮
 

@@ -46,8 +46,10 @@ React 18 + TypeScript + Vite 7 + Tailwind 3 + Supabase（Postgres + RLS + RPC）
 
 ```bash
 # 把这两个文件按顺序粘进 Supabase Dashboard -> SQL Editor 执行
-supabase/migrations/0001_init.sql          # 表、索引、RPC、权限
+supabase/migrations/0001_init.sql             # 表、索引、RPC、权限
 supabase/migrations/0002_align_decisions.sql  # 对齐决策台账
+supabase/migrations/0003_admin_set_app_validity.sql  # 改已通过分类的有效期
+supabase/migrations/0004_admin_events.sql            # 后台的操作日志
 
 # 开发用的填充数据，只在空库上跑，幂等
 supabase/seed-demo.sql
