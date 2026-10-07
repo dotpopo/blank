@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 令牌在 main.tsx 里先于本文件导入, 见 src/styles/tokens.css */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--n-canvas);
+    color: var(--n-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* 焦点可见。键盘用户必须看得见焦点在哪, 不给任何组件留例外 */
+  :focus-visible {
+    outline: 2px solid var(--a);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--a-tint-2);
+    color: var(--a-ink);
+  }
+}
+
+@layer utilities {
+  /* 数字等宽。水位、额度、倒计时都用它, 否则数字变化时整行会左右跳 */
+  .nums {
+    font-variant-numeric: tabular-nums;
+  }
+}

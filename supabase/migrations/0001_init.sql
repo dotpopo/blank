@@ -871,36 +871,9 @@ begin
 end;
 $$;
 
--- 硬删除。spec Q1 的 (b) 读法。
-create or replace function public.admin_remove_code(
-  p_token   text,
-  p_code_id uuid
-)
-returns jsonb
-language plpgsql
-security definer
-set search_path = public, extensions, pg_temp
-as $$
-declare
-  v_admin uuid;
-  v_app_id uuid;
-begin
-  v_admin := public.current_admin(p_token);
-
-  delete from public.invite_codes
-   where id = p_code_id
-  returning app_id into v_app_id;
-
-  if v_app_id is null then
-    raise exception '没有找到这个邀请码' using errcode = 'IP002';
-  end if;
-
-  insert into public.pool_events (kind, app_id, code_id)
-  values ('removed', v_app_id, p_code_id);
-
-  return jsonb_build_object('codeId', p_code_id, 'removed', true);
-end;
-$$;
+-- 决策 D-11: 管理员不删邀请码, 所以这里原本的 admin_remove_code 被移除。
+-- 管理员对邀请码只有只读权限(见 admin_codes)。
+-- 应用分类的新增与删除是 T09 的范围, 会以 0002 迁移补上。
 
 -- 清理已经过期且没被领走的码。
 create or replace function public.admin_cleanup_expired(p_token text)
@@ -979,7 +952,7 @@ begin
         'contribute_code', 'submit_app', 'list_apps',
         'pool_trend', 'pool_health',
         'admin_login', 'admin_pending_apps', 'admin_review_app',
-        'admin_apps', 'admin_codes', 'admin_remove_code',
+        'admin_apps', 'admin_codes',
         'admin_cleanup_expired', 'admin_logout'
       )
   loop

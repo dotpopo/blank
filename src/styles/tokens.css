@@ -1,0 +1,94 @@
+/* 设计令牌: 极简中性
+ *
+ * 设计读法: 工具型 Web 产品主页, 面向匿名用户, 克制、可信、以数字为主角。
+ * 三个旋钮: DESIGN_VARIANCE 4 / MOTION_INTENSITY 4 / VISUAL_DENSITY 5
+ *
+ * 三条锁定, 改任何组件前先看这里:
+ *   1. 单一强调色。全站只有 --a 这一个冷色, 不做第二个强调色。
+ *   2. 单一圆角体系。控件 8px, 面板 14px, 胶囊用 full。规则写在下面。
+ *   3. 单一主题。跟随系统, 不按区块反转。所有颜色只从变量取, 不写死。
+ */
+
+:root {
+  color-scheme: light;
+
+  /* 灰阶, 八个语义角色 */
+  --n-canvas: #f6f7f9;
+  --n-surface: #fcfcfd;
+  --n-raised: #f1f3f5;
+  --n-line: #e4e7ec;
+  --n-line-strong: #cfd4dc;
+  --n-text-dim: #6b7480;
+  --n-text: #2b3138;
+  --n-text-strong: #14181c;
+
+  /* 唯一强调色: 冷蓝。水位的隐喻是水, 所以取蓝不取绿 */
+  --a-tint: #eef3fe;
+  --a-tint-2: #dbe6ff;
+  --a-line: #b9cef8;
+  --a-mid: #6b96f5;
+  --a: #3a6fe8;
+  --a-strong: #2a55c9;
+  --a-ink: #16305f;
+  --a-on: #ffffff;
+
+  /* 功能色。只表达真实状态, 不当装饰用 */
+  --warn: #8a5d0d;
+  --warn-tint: #fdf5e4;
+  --danger: #a92f2a;
+  --danger-tint: #fdeeed;
+
+  /* 圆角: 控件 8px, 面板 14px, 胶囊 full */
+  --r-control: 8px;
+  --r-panel: 14px;
+
+  /* 层。只给系统级上下文, 不随手加 z-50 */
+  --z-nav: 40;
+  --z-overlay: 50;
+  --z-toast: 60;
+
+  /* 动效。MOTION_INTENSITY 4: 只服务状态变化, 不做叙事 */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 180ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --n-canvas: #0e1114;
+    --n-surface: #151a1f;
+    --n-raised: #1c2228;
+    --n-line: #262e36;
+    --n-line-strong: #38424c;
+    --n-text-dim: #8b95a1;
+    --n-text: #c8cfd7;
+    --n-text-strong: #f2f5f7;
+
+    --a-tint: #16223a;
+    --a-tint-2: #1b2c4d;
+    --a-line: #2c4470;
+    --a-mid: #4f7ce0;
+    --a: #6b96f5;
+    --a-strong: #4f7ce0;
+    --a-ink: #cfe0ff;
+    --a-on: #0e1114;
+
+    --warn: #d9a94f;
+    --warn-tint: #2a2113;
+    --danger: #ef8b85;
+    --danger-tint: #33191a;
+  }
+}
+
+/* 动效降级: MOTION_INTENSITY 4 超过 3, 必须处理。非协商 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
