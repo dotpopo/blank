@@ -57,7 +57,7 @@ function LoginCard({ onDone }: { onDone: (session: AdminSession) => void }) {
 
   return (
     <div className="mx-auto max-w-[420px] py-20">
-      <h1 className="text-2xl font-medium tracking-tight text-ink-strong">管理员登录</h1>
+      <h1 data-testid="admin-title" className="text-2xl font-medium tracking-tight text-ink-strong">管理员登录</h1>
       <p className="mt-3 text-sm leading-relaxed text-dim">
         固定账号，不开放注册。口令在数据库里以 bcrypt 哈希保存，登录失败时不会告诉你用户名到底存不存在。
       </p>
@@ -321,6 +321,76 @@ function PendingQueue({
   );
 }
 
+/* ---------- 有效期单元格 ---------- */
+
+/**
+ * 有效期是可改的，而且改它是有副作用的：池子里那些「到期时间跟随应用默认值」的码，
+ * 到期时间会跟着重算。所以保存之后要把影响条数说出来，不能悄悄改完就走。
+ */
+function ValidityCell({
+  app,
+  token,
+  onSaved,
+  onExpired,
+  onError,
+}: {
+  app: AdminApp;
+  token: string;
+  onSaved: (message: string) => Promise<void>;
+  onExpired: () => void;
+  onError: (message: string) => void;
+}) {
+  const [value, setValue] = useState(String(app.validityDays));
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => setValue(String(app.validityDays)), [app.validityDays]);
+
+  const dirty = value !== String(app.validityDays) && value !== "";
+
+  return (
+    <div className="flex items-center gap-2">
+      <TextInput
+        value={value}
+        onChange={(e) => setValue(e.target.value.replace(/[^\d]/g, ""))}
+        inputMode="numeric"
+        disabled={app.status !== "approved"}
+        aria-label={`「${app.name}」的有效期天数`}
+        className="nums w-16 px-2 py-1 text-center font-mono text-xs"
+      />
+      <span className="text-xs text-dim">天</span>
+      {dirty && (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            try {
+              const result = await admin.setAppValidity(token, app.appId, Number(value));
+              await onSaved(
+                `「${app.name}」的有效期从 ${result.oldValidityDays} 天改成 ${Number(value)} 天` +
+                  (result.affectedCodes
+                    ? `，池子里 ${result.affectedCodes} 个码的到期时间跟着改了`
+                    : "，池子里没有需要跟着改的码"),
+              );
+            } catch (err) {
+              if (err instanceof SessionExpired) onExpired();
+              else onError(errorText(err));
+            } finally {
+              setBusy(false);
+            }
+          }}
+          className="whitespace-nowrap rounded-control border border-accent-line px-2 py-1 text-xs text-accent-ink transition-colors duration-150 ease-out hover:bg-accent-tint"
+        >
+          保存
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ---------- 有效期单元格 ---------- */
+
+
 /* ---------- 分类管理 ---------- */
 
 function AppsPanel({
@@ -458,8 +528,17 @@ function AppsPanel({
                       <Tag tone="warn">待审</Tag>
                     )}
                   </td>
-                  <td className="nums border-b border-line py-2.5 pr-4 text-dim">
-                    {app.validityDays} 天
+                  <td className="border-b border-line py-2 pr-4">
+                    <ValidityCell
+                      app={app}
+                      token={token}
+                      onSaved={async (message) => {
+                        setNotice(message);
+                        await load();
+                      }}
+                      onExpired={onExpired}
+                      onError={setError}
+                    />
                   </td>
                   <td className="nums border-b border-line py-2.5 pr-4 text-dim">
                     {app.availableCodes}
@@ -631,7 +710,7 @@ export default function Admin() {
   if (!adminAvailable) {
     return (
       <div className="max-w-[60ch] py-20">
-        <h1 className="text-2xl font-medium tracking-tight text-ink-strong">管理员后台</h1>
+        <h1 data-testid="admin-title" className="text-2xl font-medium tracking-tight text-ink-strong">管理员后台</h1>
         <span data-testid="admin-demo-notice" className="sr-only">演示数据源下后台不可用</span>
         <div className="mt-5">
           <Callout tone="neutral" title="当前是演示数据源，后台不可用">
@@ -664,7 +743,10 @@ export default function Admin() {
     <div className="pb-8 pt-12">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-medium leading-tight tracking-tight text-ink-strong">
+          <h1
+            data-testid="admin-title"
+            className="text-3xl font-medium leading-tight tracking-tight text-ink-strong"
+          >
             管理后台
           </h1>
           <p className="nums mt-2 text-sm text-dim">

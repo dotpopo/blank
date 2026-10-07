@@ -98,6 +98,25 @@ const PASS = process.env.ADMIN_PASS;
   await page.keyboard.press("ArrowUp");
   step("队列接受键盘操作", true);
 
+  // 9. 改一个已通过分类的有效期。改它是有副作用的, 所以验完要改回去
+  const row = page.locator("[data-testid='apps-panel'] tbody tr").first();
+  const validityInput = row.locator("input").first();
+  const original = await validityInput.inputValue();
+  const bumped = String(Number(original) + 3);
+
+  await validityInput.fill(bumped);
+  await row.getByRole("button", { name: "保存" }).click();
+  await page.waitForTimeout(1800);
+  const afterBump = await row.locator("input").first().inputValue();
+  step("改有效期生效", afterBump === bumped, `${original} -> ${afterBump}`);
+
+  // 改回去, 不留痕迹
+  await row.locator("input").first().fill(original);
+  await row.getByRole("button", { name: "保存" }).click();
+  await page.waitForTimeout(1800);
+  const afterRevert = await row.locator("input").first().inputValue();
+  step("改回原值", afterRevert === original, `-> ${afterRevert}`);
+
   await page.screenshot({ path: `${OUT}/admin-console.png`, fullPage: true });
   await page.goto(`${BASE}/admin`, { waitUntil: "networkidle" });
   await page.screenshot({ path: `${OUT}/admin-login.png`, fullPage: false });

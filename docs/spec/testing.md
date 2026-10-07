@@ -204,3 +204,29 @@ node tools/verify-admin.cjs
 后台任务（不管是哪种 shell 的后台执行）有**约 2 分钟上限**。开发服务器跑到 2 分钟会被掐，
 e2e 跑到一半就会 `ERR_CONNECTION_REFUSED`，看起来像测试挂了。
 让 e2e 自己起服务器（`reuseExisting: true` 下没服务它自己起）就没有这个问题。
+
+### 又一条踩过三次的坑：僵尸服务器
+
+后台任务有约 2 分钟上限，被掐掉的是父进程，**它拉起的 vite 子进程可能活下来继续占着 5173**。
+之后 e2e 的 `reuseExisting: true` 会复用它，于是：
+
+- 如果那个僵尸是没有环境变量的，e2e 就悄悄跑在**演示源**上，你以为在测真实库
+- 如果它正在死，e2e 会拿到 `chrome-error://chromewebdata/`，看起来像应用挂了
+
+**每次跑之前先清端口**（只杀监听 5173/5174 的进程，不要按名字杀 node，会误伤别的）：
+
+```
+foreach ($port in 5173,5174) {
+  Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue |
+    ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
+}
+```
+
+要确认服务的是哪个数据源，别猜，读页脚：
+
+```js
+const footer = await page.locator('footer').innerText();
+/真实数据库/.test(footer)   // true = 真实库, false = 演示源
+```
+
+`tools/verify-admin.cjs` 里已经带了这个守卫，跑之前会先确认数据源。

@@ -206,6 +206,23 @@ export function createAdminSource() {
       }));
     },
 
+    /** 改一个已通过分类的默认有效期。只影响 future 的码, 加上池子里还没被领走且没自定义到期时间的码 */
+    async setAppValidity(
+      token: string,
+      appId: string,
+      validityDays: number,
+    ): Promise<{ oldValidityDays: number; affectedCodes: number }> {
+      const raw = await adminRpc<{ oldValidityDays?: number; affectedCodes?: number }>(
+        "admin_set_app_validity",
+        { p_token: token, p_app_id: appId, p_validity_days: validityDays },
+      );
+      return {
+        oldValidityDays: num(raw?.oldValidityDays ?? validityDays),
+        affectedCodes: num(raw?.affectedCodes ?? 0),
+      };
+    },
+
+
     async addApp(
       token: string,
       name: string,
