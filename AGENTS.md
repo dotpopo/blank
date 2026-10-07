@@ -13,12 +13,16 @@
 ## 当前状态
 
 - 分支: `feat/invite-pool`
-- spec **已冻结**。决策台账见 `docs/spec/invite-pool.spec.md` 第 10 节(10.1 已拍板 10 条,
-  10.4 剩 3 条不阻塞当前阶段)。
+- spec **已冻结**。决策台账见 `docs/spec/invite-pool.spec.md` 第 10 节(10.1 已拍板 **11** 条,
+  10.4 剩 O-3/O-4/O-5 三条,均不阻塞开工)。
 - 已落地: T00(基线)、T01(`supabase/migrations/0001_init.sql`, 已通过真实 PostgreSQL 解析器校验,
   **但按 D-1 暂不在 Supabase 上执行**)、T02(`tools/password-hash.html`)
 - **当前阶段不接数据库,前台走演示数据**(决策 D-1)。`0001_init.sql` 保留为目标 schema,
   数据访问收敛到 `src/data/` 一个接缝,先实现演示适配器。
+- **Supabase 凭证已验证可用**(`auth/v1/health` 200,`public.apps` 返回 `PGRST205`),
+  接不接、什么时候接见 spec 第 10.7 节。**执行 migration 需要用户动手**(只有 anon key 做不了 DDL)。
+- **D-11: 管理员不删邀请码**,只管应用分类的增删 + 新应用审批。
+  接真实库前要先删掉 `0001_init.sql` 里的 `admin_remove_code` RPC。
 - **产品前端尚未开始**。`src/App.tsx` 仍然 `return null`, 这是正常的。
 - 下一步: T04(设计系统与外壳) → T05(首页) → T06..T09 → T10 → T11
 - T03(公开 RPC 层)按 D-1 改写:先定类型与接缝,真实适配器只留骨架。
@@ -101,6 +105,38 @@
 | 开发服务器 | `npm run dev`,绑定 `127.0.0.1:5173` |
 | 构建 | `npm run build` |
 | e2e 测试 | `npm run test:e2e`(tester.army/e2e) |
+
+### 环境变量与 PATH(2026-10-07 实测)
+
+| 变量 | 在哪 | 实测状态 |
+|---|---|---|
+| `VITE_SUPABASE_URL` | 用户级环境变量(User) | `https://vsspvkeoukzbqwxbabbc.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | 用户级环境变量(User) | 208 字符的合法 anon JWT,`ref` 与 URL 一致,2036 年过期 |
+| `LLM_BASE_URL` / `LLM_KEY` / `LLM_MODEL_ID` | 用户级环境变量(User) | e2e 的模型凭证,`e2e.config.ts` 直接读 `process.env` |
+
+**不要写 `.env` 文件**。这三个 Supabase 变量和三个 LLM 变量都以用户级环境变量为唯一来源。
+
+**两条坑,都是 WorkBuddy 运行时的行为,不是用户配置错了:**
+
+1. **子进程里的 `node` 不是 `D:\nodejs` 的。** WorkBuddy 会在每个子 shell 的 PATH 最前面插入
+   托管运行时(`.../binaries/node/versions/22.22.2-2`)。用户 PATH 里 `D:\nodejs`
+   (Machine 段第 16 位,`D:\nodejs\node.exe` 是 24.16.0)在前移之后**仍然会被托管版本盖住**。
+   所以 e2e 那条 `export PATH="/d/nodejs:$PATH"` **还是要留着**。
+2. **应用进程的环境变量是启动时快照。** 用户在应用启动之后新加的环境变量,
+   子 shell 里读不到(`env | grep VITE_` 为空)。要让子进程拿到,得**重启 WorkBuddy**。
+   在重启之前,需要这些值时直接从注册表读:
+   `[Environment]::GetEnvironmentVariable('VITE_SUPABASE_URL','User')`。
+
+**Supabase 连通性的正确探法**(别用 `/rest/v1/` 根路径,那个要 service_role,会误报 401):
+
+```bash
+curl -sS -i -H "apikey: $KEY" "$URL/auth/v1/health"        # 期望 200 + GoTrue 版本
+curl -sS -i -H "apikey: $KEY" "$URL/rest/v1/apps?select=id&limit=1"
+# 期望 404 + PGRST205(表不存在)= 鉴权已通过;真 401 才是 key 无效
+```
+
+本机 DNS 对 `*.supabase.co` / `*.supabase.com` 解析到 `198.18.x.x`
+(代理工具的 fake-IP 段),请求能正常穿过去,不用管。
 
 ### 跑 e2e 前必须注意
 
