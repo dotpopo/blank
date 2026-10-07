@@ -80,11 +80,15 @@ test("同一个码放两次，第二次被拒且额度不扣", async ({ app, scr
   );
 });
 
-test("提交一个新分类，进入待审", async ({ app, screen }) => {
+test("提交一个新分类，带着分类与描述进待审", async ({ app, screen }) => {
   await freshStart(app, screen);
 
   await app.open("/contribute");
   await screen.getByTestId("contribute-app-name").fill("端到端测试分类");
+  // 分类与描述是管理员审批时唯一能依据的东西, 所以要能填进去
+  await screen.getByTestId("contribute-app-category").fill("效率");
+  await screen.getByTestId("contribute-app-desc").fill("端到端测试用的一句话说明");
+  await screen.getByTestId("contribute-app-url").fill("https://example.com");
   await screen.getByRole("button", "提交待审").tap();
 
   await expect(screen.getByTestId("submit-app-result")).toHaveText(/等管理员审批/);
@@ -92,4 +96,17 @@ test("提交一个新分类，进入待审", async ({ app, screen }) => {
   // 待审的分类不该出现在首页的筛选里, 否则审批就没有意义
   await app.open("/");
   await expect(screen.getByRole("button", "端到端测试分类")).toBeHidden();
+});
+
+test("名字撞上已有分类会被拦住，不造重复的待审条目", async ({ app, screen }) => {
+  await freshStart(app, screen);
+
+  await app.open("/contribute");
+  // Kestrel 是演示数据里已有的分类
+  await screen.getByTestId("contribute-app-name").fill("Kestrel");
+
+  await expect(screen.getByRole("alert")).toHaveText(/已经在列表里了/);
+
+  // 撞名时提交按钮要禁掉, 否则队列里会堆出一串重复条目 (spec 11.8)
+  await expect(screen.getByRole("button", "提交待审")).toBeDisabled();
 });

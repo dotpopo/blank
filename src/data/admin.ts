@@ -43,6 +43,17 @@ export type AdminApp = {
   claimedCodes: number;
 };
 
+/** 操作日志的一行。注意「谁」这件事在这个站里是有限的: 前台匿名, 管理员固定单账号 */
+export type AdminEvent = {
+  occurredAt: string;
+  /** added / claimed / app_submitted / app_approved / app_rejected / app_added / app_archived */
+  kind: string;
+  appName: string | null;
+  /** 只给码的头尾两段, 和码列表一样不暴露完整码文 */
+  codePreview: string | null;
+};
+
+
 export type AdminCode = {
   codeId: string;
   appId: string;
@@ -104,6 +115,14 @@ type RawAdminApp = {
   available_codes: number | string;
   claimed_codes: number | string;
 };
+
+type RawEvent = {
+  occurred_at: string;
+  kind: string;
+  app_name: string | null;
+  code_preview: string | null;
+};
+
 
 type RawAdminCode = {
   code_id: string;
@@ -220,6 +239,20 @@ export function createAdminSource() {
         oldValidityDays: num(raw?.oldValidityDays ?? validityDays),
         affectedCodes: num(raw?.affectedCodes ?? 0),
       };
+    },
+
+
+    async events(token: string, limit = 100): Promise<AdminEvent[]> {
+      const rows = await adminRpc<RawEvent[]>("admin_events", {
+        p_token: token,
+        p_limit: limit,
+      });
+      return rows.map((row) => ({
+        occurredAt: row.occurred_at,
+        kind: row.kind,
+        appName: row.app_name,
+        codePreview: row.code_preview,
+      }));
     },
 
 

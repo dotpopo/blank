@@ -502,6 +502,7 @@ export function createDemoSource(): PoolSource {
         slug,
         status: "pending",
         defaultTtlDays: input.ttlDays,
+        category: input.category?.trim() || "其他",
         createdAt: new Date().toISOString(),
       });
     },

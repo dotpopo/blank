@@ -16,6 +16,8 @@ export const appSchema = z.object({
   defaultTtlDays: z.number().int().positive(),
   /** 审批状态。真实库的 list_apps 只返回已通过的, 所以是可选的 */
   status: appStatusSchema.optional(),
+  /** 分类。演示数据源用它存提交时填的分类; 真实库那边由 list_apps 返回 */
+  category: z.string().optional(),
   /** 归一化键。真实库的 list_apps 不返回它, 前端按同样规则算, 所以是可选的 */
   slug: z.string().optional(),
   /** 真实库的 list_apps 不返回创建时间 */
@@ -82,6 +84,12 @@ export type ContributeInput = z.infer<typeof contributeInputSchema>;
 export const submitAppInputSchema = z.object({
   name: z.string().trim().min(1, "应用名不能为空").max(40, "应用名太长了"),
   ttlDays: z.number().int().positive().max(3650),
+  /** 分类。管理员审批时要靠它归类 */
+  category: z.string().trim().max(20, "分类名太长了").optional(),
+  /** 一句话说明这个应用是什么。管理员审批时要看 */
+  description: z.string().trim().max(120, "描述太长了").optional(),
+  /** 官网。管理员用来确认这不是个凭空捏造的应用 */
+  url: z.string().trim().max(200).optional(),
 });
 export type SubmitAppInput = z.infer<typeof submitAppInputSchema>;
 

@@ -9,6 +9,7 @@ import {
   writeSession,
   type AdminApp,
   type AdminCode,
+  type AdminEvent,
   type AdminSession,
   type PendingApp,
 } from "../data/admin";
@@ -681,6 +682,86 @@ function CodesPanel({ token, onExpired }: { token: string; onExpired: () => void
   );
 }
 
+/* ---------- 操作日志 ---------- */
+
+/** 事件类型 -> 人话。左列是 0001/0002 里 pool_events.kind 的全部取值 */
+const EVENT_LABEL: Record<string, string> = {
+  added: "有码放进池子",
+  claimed: "有码被领走",
+  removed: "有码被移除",
+  app_submitted: "有人提交了新分类",
+  app_approved: "通过了一个分类",
+  app_rejected: "驳回了一个分类",
+  app_added: "新增了分类",
+  app_archived: "下架了分类",
+};
+
+function EventsPanel({ token, onExpired }: { token: string; onExpired: () => void }) {
+  const [events, setEvents] = useState<AdminEvent[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      setEvents(await admin.events(token, 120));
+    } catch (err) {
+      if (err instanceof SessionExpired) onExpired();
+      else setError(errorText(err));
+    }
+  }, [token, onExpired]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  return (
+    <section aria-label="操作日志" data-testid="events-panel" className="mt-14">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h2 className="text-lg font-medium tracking-tight text-ink-strong">操作日志</h2>
+        <p className="text-xs text-dim">最近 120 条</p>
+      </div>
+
+      <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-dim">
+        前台完全匿名，所以用户侧的动作没有身份可言；管理员又是固定单账号。
+        所以这里能回答的是「什么时候、对哪个分类、发生了什么」，回答不了「哪个用户干的」。
+        要做到后者得引入账号体系，与「纯匿名」的前提冲突。
+      </p>
+
+      {error && (
+        <div className="mt-4">
+          <Callout tone="danger" title="没能读到日志">
+            {error}
+          </Callout>
+        </div>
+      )}
+
+      {events === null ? (
+        <Skeleton className="mt-5 h-40 rounded-panel" />
+      ) : events.length === 0 ? (
+        <p className="mt-5 text-sm text-dim">还没有任何记录。</p>
+      ) : (
+        <ul className="mt-5 flex flex-col">
+          {events.map((event, index) => (
+            <li
+              key={`${event.occurredAt}-${index}`}
+              className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-line py-2.5 text-sm last:border-b-0"
+            >
+              <span className="nums w-[9.5rem] shrink-0 text-xs text-dim">
+                {shortDate(event.occurredAt)}{" "}
+                {new Date(event.occurredAt).toTimeString().slice(0, 5)}
+              </span>
+              <span className="text-ink">{EVENT_LABEL[event.kind] ?? event.kind}</span>
+              {event.appName && <span className="text-ink-strong">{event.appName}</span>}
+              {event.codePreview && (
+                <span className="font-mono text-xs text-dim">{event.codePreview}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 /* ---------- 页面 ---------- */
 
 export default function Admin() {
@@ -783,6 +864,7 @@ export default function Admin() {
 
       <AppsPanel token={session.token} onExpired={onExpired} />
       <CodesPanel token={session.token} onExpired={onExpired} />
+      <EventsPanel token={session.token} onExpired={onExpired} />
     </div>
   );
 }

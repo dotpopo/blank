@@ -23,6 +23,9 @@ export default function Contribute() {
 
   // 新分类
   const [newName, setNewName] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newUrl, setNewUrl] = useState("");
   const [newTtl, setNewTtl] = useState("14");
   const [appBusy, setAppBusy] = useState(false);
   const [appDone, setAppDone] = useState(false);
@@ -39,6 +42,15 @@ export default function Contribute() {
   }, []);
 
   const selected = apps.find((a) => a.id === appId);
+
+  // 提交前先按 slug 归一化匹配已有分类 (spec 11.8)。
+  // 名字撞上了就让他直接去上面那个表单放码, 别造一个重复的待审条目:
+  // 否则一周后队列里会有 5 个「ChatGPT」、3 个「Chat GPT」。
+  const normalizeName = (value: string) => value.trim().toLowerCase().replace(/\s+/g, "");
+  const nameClash =
+    newName.trim().length > 0
+      ? apps.find((a) => normalizeName(a.name) === normalizeName(newName))
+      : undefined;
 
   const [quotaTick, setQuotaTick] = useState(0);
   useEffect(() => subscribeQuota(() => setQuotaTick((n) => n + 1)), []);
@@ -86,7 +98,13 @@ export default function Contribute() {
   async function onSubmitApp(e: React.FormEvent) {
     e.preventDefault();
     setAppError(null);
-    const parsed = submitAppInputSchema.safeParse({ name: newName, ttlDays: Number(newTtl) });
+    const parsed = submitAppInputSchema.safeParse({
+      name: newName,
+      ttlDays: Number(newTtl),
+      category: newCategory || undefined,
+      description: newDesc || undefined,
+      url: newUrl || undefined,
+    });
     if (!parsed.success) {
       setAppError(parsed.error.issues[0]?.message ?? "填的内容有问题");
       return;
@@ -200,12 +218,41 @@ export default function Contribute() {
           </div>
         ) : (
           <form onSubmit={onSubmitApp} className="mt-6 flex flex-col gap-5">
-            <Field label="应用名">
+            <Field
+              label="应用名"
+              hint={nameClash ? undefined : "管理员审批时要靠这个名字和描述判断"}
+              error={nameClash ? `「${nameClash.name}」已经在列表里了，直接在上面那个表单里放码就行` : undefined}
+            >
               <TextInput
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="例如 云栖笔记"
                 data-testid="contribute-app-name"
+              />
+            </Field>
+            <Field label="分类" hint="例如 AI 工具、效率、设计创作。管理员靠它归类">
+              <TextInput
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="其他"
+                data-testid="contribute-app-category"
+              />
+            </Field>
+            <Field label="一句话说明这个应用是什么" hint="管理员审批时要看">
+              <TextInput
+                value={newDesc}
+                onChange={(e) => setNewDesc(e.target.value)}
+                placeholder="例如 给设计师用的配色管理工具"
+                data-testid="contribute-app-desc"
+              />
+            </Field>
+            <Field label="官网" hint="管理员用它确认这不是个凭空捏造的应用">
+              <TextInput
+                value={newUrl}
+                onChange={(e) => setNewUrl(e.target.value)}
+                placeholder="https://example.com"
+                inputMode="url"
+                data-testid="contribute-app-url"
               />
             </Field>
             <Field label="这个分类的邀请码有效期（天）">
@@ -218,7 +265,7 @@ export default function Contribute() {
             </Field>
             {appError && <Callout tone="danger" title="没能提交">{appError}</Callout>}
             <div>
-              <Button type="submit" variant="ghost" busy={appBusy}>
+              <Button type="submit" variant="ghost" busy={appBusy} disabled={Boolean(nameClash)}>
                 提交待审
               </Button>
             </div>

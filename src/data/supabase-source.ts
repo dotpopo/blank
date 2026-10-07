@@ -300,6 +300,9 @@ export function createSupabaseSource(): PoolSource {
     async submitApp(input: SubmitAppInput): Promise<void> {
       await rpc("submit_app", {
         p_name: input.name.trim(),
+        p_category: input.category?.trim() || "其他",
+        p_description: input.description?.trim() || null,
+        p_url: input.url?.trim() || null,
         p_validity_days: input.ttlDays,
         p_browser_id: browserId(),
       });

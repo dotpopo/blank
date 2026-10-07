@@ -117,6 +117,12 @@ const PASS = process.env.ADMIN_PASS;
   const afterRevert = await row.locator("input").first().inputValue();
   step("改回原值", afterRevert === original, `-> ${afterRevert}`);
 
+  // 10. 操作日志
+  const eventsPanel = page.getByTestId("events-panel");
+  step("操作日志面板渲染", await eventsPanel.isVisible().catch(() => false));
+  const eventRows = await page.locator("[data-testid='events-panel'] li").count();
+  step("日志里有记录", eventRows > 0, `${eventRows} 条`);
+
   await page.screenshot({ path: `${OUT}/admin-console.png`, fullPage: true });
   await page.goto(`${BASE}/admin`, { waitUntil: "networkidle" });
   await page.screenshot({ path: `${OUT}/admin-login.png`, fullPage: false });

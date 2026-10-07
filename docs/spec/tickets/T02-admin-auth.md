@@ -34,8 +34,11 @@
 - [x] `admin_login(p_username, p_password)` RPC 实现完成,返回短期 token(见 Q6)。
 - [x] token 的签发与校验规则写进 spec 或 `AGENTS.md`:
       有效期、存储位置(`sessionStorage`)、失效方式。
-- [ ] `docs/spec/tickets/T02-admin-auth.md` 里补充**实际生成的示例哈希**(用一个测试密码),
-      > **未做。工单原意是留一个测试哈希做参考, 实际没补。要补的话用 tools/password-hash.html 生成一个即可**
+- [x] `docs/spec/tickets/T02-admin-auth.md` 里补充**实际生成的示例哈希**(用一个测试密码),
+      > 已补。`test-password-for-reference-only` 的 bcrypt 哈希(cost 12, 由 pgcrypto 现算):
+      > `$2a$12$FR9uiHeL6z27oFwyOdPIJ.IcBVeKe6S8smy9qfejRaokplXNRQPZC`
+      > **这只是格式参考, 不是任何账号的凭据。** 你自己的口令请用 `supabase/seed-admin.sql`
+      > 或 `tools/password-hash.html` 生成。
       方便 T09 直接拿去做联调。
 
 ## 验收
