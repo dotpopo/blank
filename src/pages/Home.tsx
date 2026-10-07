@@ -239,7 +239,10 @@ export default function Home() {
           data-testid="water-level"
           className="max-w-[16ch] text-4xl font-medium leading-[1.15] tracking-tight text-ink-strong md:text-6xl"
         >
-          池子里还有 <span className="nums text-accent">{total}</span> 个邀请码
+          池子里还有{" "}
+          <span className="whitespace-nowrap">
+            <span className="nums text-accent">{total}</span> 个邀请码
+          </span>
         </h1>
 
         <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-dim">
@@ -303,7 +306,7 @@ export default function Home() {
         </div>
         {isDemoSource && (
           <p className="mt-2.5 text-xs text-dim">
-            这两个数字是演示值。接上真实数据源后，它们来自实际流水。
+            演示数据源。这两个数字是对演示事件流当天聚合出来的，接上真实库后会来自实际流水。
           </p>
         )}
       </section>
@@ -373,14 +376,8 @@ export default function Home() {
       <section className="mt-16 border-t border-line pt-8">
         <h2 className="text-lg font-medium tracking-tight text-ink-strong">这个池子怎么运转</h2>
         <div className="mt-5 grid gap-6 text-sm leading-relaxed text-dim md:grid-cols-2">
-          <p>
-            码被领走就从池子里消失，不会挂在墙上继续占位置。所以这里的数字是「现在还能拿到多少」，
-            不是「历史上一共出现过多少」。
-          </p>
-          <p>
-            每个应用分类，每个浏览器，每天各 3 次领取、3 次贡献、3 次摇骰子。计数存在你自己的浏览器里，
-            清掉缓存就会重置，我们不靠这个拦住谁，只是给个刹车。
-          </p>
+          <p>码被领走就从池子里消失，不会挂在墙上继续占位置。所以这里的数字是「现在还能拿到多少」，不是「历史上一共出现过多少」。</p>
+          <p>每个应用分类，每个浏览器，每天各 3 次领取、3 次贡献、3 次摇骰子。计数存在你自己的浏览器里，清掉缓存就会重置，我们不靠这个拦住谁，只是给个刹车。</p>
         </div>
       </section>
     </div>

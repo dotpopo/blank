@@ -6,6 +6,7 @@ import type {
   PoolSummary,
   Quota,
   SubmitAppInput,
+  Trend,
 } from "../types/domain";
 
 /**
@@ -61,6 +62,9 @@ export interface PoolSource {
 
   /** 某个应用分类下, 这个浏览器今天还剩多少额度 */
   quota(appId: string): Promise<Quota>;
+
+  /** 大盘。days 是区间天数, 通常 7 或 30 */
+  trend(days: number): Promise<Trend>;
 
   /** 领取。成功才返回码文 */
   claim(options?: ClaimOptions): Promise<ClaimedCode>;

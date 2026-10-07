@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppShell from "./layouts/AppShell";
 import Home from "./pages/Home";
 import Contribute from "./pages/Contribute";
+import Dashboard from "./pages/Dashboard";
 import Stub from "./pages/Stub";
 
 export default function App() {
@@ -11,15 +12,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route index element={<Home />} />
           <Route path="contribute" element={<Contribute />} />
-          <Route
-            path="dashboard"
-            element={
-              <Stub title="大盘">
-                这里要放邀请码的新增与消费趋势，按天画两条线加一条净量。它服务的是「供需有没有失衡」，
-                不是给单个用户看的，所以不会堆图表。
-              </Stub>
-            }
-          />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route
             path="admin"
             element={

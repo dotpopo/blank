@@ -24,13 +24,16 @@ export default function AppShell() {
   return (
     <div className="flex min-h-[100dvh] flex-col">
       <header className="sticky top-0 z-nav border-b border-line bg-surface/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-[1120px] items-center gap-6 px-5">
-          <Link to="/" className="flex items-center gap-2.5 text-ink-strong no-underline">
+        <div className="mx-auto flex h-16 max-w-[1120px] items-center gap-3 px-4 sm:gap-6 sm:px-5">
+          <Link
+            to="/"
+            className="flex shrink-0 items-center gap-2.5 text-ink-strong no-underline"
+          >
             <BrandMark />
-            <span className="text-[17px] font-medium tracking-tight">水线</span>
+            <span className="hidden text-[17px] font-medium tracking-tight sm:inline">水线</span>
           </Link>
 
-          <nav aria-label="主导航" className="flex items-center gap-1">
+          <nav aria-label="主导航" className="flex shrink-0 items-center gap-1">
             {NAV.map((item) => {
               const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
               return (
@@ -40,8 +43,8 @@ export default function AppShell() {
                   aria-current={active ? "page" : undefined}
                   className={
                     active
-                      ? "rounded-control px-3 py-1.5 text-sm font-medium text-ink-strong"
-                      : "rounded-control px-3 py-1.5 text-sm text-dim transition-colors duration-150 ease-out hover:text-ink"
+                      ? "whitespace-nowrap rounded-control px-3 py-1.5 text-sm font-medium text-ink-strong"
+                      : "whitespace-nowrap rounded-control px-3 py-1.5 text-sm text-dim transition-colors duration-150 ease-out hover:text-ink"
                   }
                 >
                   {item.label}
@@ -50,7 +53,7 @@ export default function AppShell() {
             })}
           </nav>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
             {isDemoSource && (
               <Tag tone="warn">
                 <span className="hidden sm:inline">演示数据</span>
@@ -59,9 +62,9 @@ export default function AppShell() {
             )}
             <Link
               to="/contribute"
-              className="rounded-control bg-accent-strong px-3.5 py-2 text-sm font-medium text-accent-on no-underline transition-[filter] duration-150 ease-out hover:brightness-110 active:translate-y-px"
+              className="whitespace-nowrap rounded-control bg-accent-strong px-3.5 py-2 text-sm font-medium text-accent-on no-underline transition-[filter] duration-150 ease-out hover:brightness-110 active:translate-y-px"
             >
-              贡献邀请码
+              贡献<span className="hidden sm:inline">邀请码</span>
             </Link>
           </div>
         </div>
@@ -74,8 +77,7 @@ export default function AppShell() {
       <footer className="mt-20 border-t border-line">
         <div className="mx-auto flex max-w-[1120px] flex-col gap-3 px-5 py-8 text-xs text-dim sm:flex-row sm:items-center sm:justify-between">
           <p className="leading-relaxed">
-            匿名共享，不记录身份。领取与贡献都在你自己的浏览器里计数，每个应用每天各 3 次。
-            {isDemoSource && " 当前展示的是演示数据，存在本地浏览器里。"}
+            匿名共享，不记录身份。领取与贡献都在你自己的浏览器里计数，每个应用每天各 3 次。{isDemoSource && " 当前展示的是演示数据，存在本地浏览器里。"}
           </p>
           <div className="flex shrink-0 items-center gap-4">
             {isDemoSource && (

@@ -79,3 +79,57 @@ export const submitAppInputSchema = z.object({
   ttlDays: z.number().int().positive().max(3650),
 });
 export type SubmitAppInput = z.infer<typeof submitAppInputSchema>;
+
+/** 大盘的一天。区间内没事件的日子也保留, 计 0, 这样横轴是连续的 */
+export const trendPointSchema = z.object({
+  /** YYYY-MM-DD */
+  date: z.string(),
+  added: z.number().int().nonnegative(),
+  claimed: z.number().int().nonnegative(),
+  expired: z.number().int().nonnegative(),
+  /**
+   * 当天结束时的池子水位。
+   * 注意这是绝对存量, 和上面三个日流量不是一个量纲, 画图时必须单独一条轴,
+   * 否则两条线看着相交, 实际毫无可比性。
+   */
+  net: z.number().int().nonnegative(),
+});
+export type TrendPoint = z.infer<typeof trendPointSchema>;
+
+export const appStatSchema = z.object({
+  appId: z.string(),
+  appName: z.string(),
+  value: z.number().int().nonnegative(),
+});
+export type AppStat = z.infer<typeof appStatSchema>;
+
+/**
+ * 大盘。所有字段都是从事件流聚合出来的, 没有一个是写死的。
+ * 数据薄的时候要能诚实反映出来, 所以带了 coveredDays 和 claimSampleSize。
+ */
+export const trendSchema = z.object({
+  points: z.array(trendPointSchema),
+  /** 请求的区间天数 */
+  requestedDays: z.number().int().positive(),
+  /** points 覆盖的天数, 即真实数据的跨度 */
+  spanDays: z.number().int().nonnegative(),
+  /** 其中真的有事件的天数。和 spanDays 的差距就是「数据有多薄」 */
+  coveredDays: z.number().int().nonnegative(),
+  /** 池子最早的数据落在哪天 */
+  firstDay: z.string().nullable(),
+  /** 当前净水位 */
+  netNow: z.number().int().nonnegative(),
+  /** 相对区间起点的净变化 */
+  netChange: z.number().int(),
+  /** 中位领取时长(分钟)。样本不足时为 null, UI 要如实说明 */
+  medianClaimMinutes: z.number().nullable(),
+  /** 中位数的样本量 */
+  claimSampleSize: z.number().int().nonnegative(),
+  /** 今天白白过期的码数 */
+  expiredToday: z.number().int().nonnegative(),
+  /** 消耗最快 */
+  draining: z.array(appStatSchema),
+  /** 积压最多 */
+  piledUp: z.array(appStatSchema),
+});
+export type Trend = z.infer<typeof trendSchema>;
