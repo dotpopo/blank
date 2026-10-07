@@ -140,6 +140,7 @@ export default function Contribute() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="例如 MF-4K9T-2XQ8"
+            data-testid="contribute-code"
             autoComplete="off"
             spellCheck={false}
             className="font-mono"
@@ -156,13 +157,21 @@ export default function Contribute() {
         </Field>
 
         {quota && (
-          <p className="nums text-sm text-dim">
+          <p data-testid="quota-line" className="nums text-sm text-dim">
             这个分类今天还能放 {quota.contributeLeft} 次
           </p>
         )}
 
-        {error && <Callout tone="danger" title="没能放进去">{error}</Callout>}
-        {done && <Callout tone="neutral" title="放进去了">{done}</Callout>}
+        {error && (
+          <div data-testid="contribute-error">
+            <Callout tone="danger" title="没能放进去">{error}</Callout>
+          </div>
+        )}
+        {done && (
+          <div data-testid="contribute-result">
+            <Callout tone="neutral" title="放进去了">{done}</Callout>
+          </div>
+        )}
 
         <div>
           <Button type="submit" busy={busy} disabled={!apps.length}>
@@ -181,7 +190,7 @@ export default function Contribute() {
         </p>
 
         {appDone ? (
-          <div className="mt-6">
+          <div className="mt-6" data-testid="submit-app-result">
             <Callout tone="neutral" title="已经提交">
               等管理员审批。通过之后它就会出现在首页的分类里。
             </Callout>
@@ -193,6 +202,7 @@ export default function Contribute() {
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="例如 云栖笔记"
+                data-testid="contribute-app-name"
               />
             </Field>
             <Field label="这个分类的邀请码有效期（天）">

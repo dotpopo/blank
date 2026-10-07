@@ -293,7 +293,7 @@ export default function Home() {
                 />
               ) : (
                 <span className="num-display text-[64px] leading-[0.9] text-accent md:text-[92px]">
-                  –
+                  …
                 </span>
               )}{" "}
               <span className="text-base text-ink-strong md:text-lg">个邀请码</span>
@@ -343,8 +343,16 @@ export default function Home() {
             摇一个
           </Button>
           {quota && (
-            <span data-testid="quota-line" className="nums text-sm text-dim">
-              这个分类今天还能领 {quota.claimLeft} 次
+            /* 额度用完时把话说清楚。不禁用按钮: 禁用的按钮不告诉人为什么点不动 */
+            <span
+              data-testid="quota-line"
+              className={
+                "nums text-sm " + (quota.claimLeft === 0 ? "text-warn" : "text-dim")
+              }
+            >
+              {quota.claimLeft === 0
+                ? "这个分类今天的额度用完了，明天再来"
+                : `这个分类今天还能领 ${quota.claimLeft} 次`}
             </span>
           )}
         </div>

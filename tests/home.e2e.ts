@@ -57,10 +57,12 @@ test("同一个分类领满 3 次之后被额度拦住", async ({ app, screen })
   await screen.getByRole("button", APP).tap();
   await expect(screen.getByTestId("quota-line")).toHaveText(`这个分类今天还能领 3 次`);
 
-  for (const left of [2, 1, 0]) {
+  for (const left of [2, 1]) {
     await screen.getByRole("button", "领一个").tap();
     await expect(screen.getByTestId("quota-line")).toHaveText(`这个分类今天还能领 ${left} 次`);
   }
+  await screen.getByRole("button", "领一个").tap();
+  await expect(screen.getByTestId("quota-line")).toHaveText(/额度用完了/);
 
   await screen.getByRole("button", "领一个").tap();
   await expect(screen.getByRole("alert")).toHaveText(/用满/);
