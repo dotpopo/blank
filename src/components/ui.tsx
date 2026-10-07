@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { forwardRef } from "react";
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from "react";
 
 /**
@@ -130,19 +131,22 @@ export function Field({
   );
 }
 
-export function TextInput({ className, ...rest }: InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      {...rest}
-      className={clsx(
-        "w-full rounded-control border border-line bg-surface px-3 py-2.5",
-        "text-sm text-ink-strong placeholder:text-dim",
-        "transition-colors duration-150 ease-out hover:border-line-strong",
-        className,
-      )}
-    />
-  );
-}
+export const TextInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
+  function TextInput({ className, ...rest }, ref) {
+    return (
+      <input
+        {...rest}
+        ref={ref}
+        className={clsx(
+          "w-full rounded-control border border-line bg-surface px-3 py-2.5",
+          "text-sm text-ink-strong placeholder:text-dim",
+          "transition-colors duration-150 ease-out hover:border-line-strong",
+          className,
+        )}
+      />
+    );
+  },
+);
 
 /** 内联提示。错误用 danger, 说明用 neutral */
 export function Callout({

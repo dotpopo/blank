@@ -157,3 +157,50 @@ const next = await screen.getByTestId("hash-output").textContent();
 | `tests/example.e2e.ts` | 1 | 否 |
 
 产品本身的用例(T10)还没写, 等 T05 到 T09 落地。
+
+---
+
+## 后台为什么不在 e2e 套件里（2026-10-07 补充）
+
+`tests/admin.e2e.ts` **只**覆盖「演示数据源下后台如实说明不可用」这一半。
+完整的后台流程（登录、待审队列、分类增删、码列表）走 `tools/verify-admin.cjs`。
+
+原因是数据源冲突：
+
+| | 需要的数据源 | 为什么 |
+|---|---|---|
+| `tests/home.e2e.ts`、`tests/dashboard.e2e.ts`、`tests/admin.e2e.ts` | **演示** | 要能「重置演示数据」回到同一个起点；要确定；不能消耗真实库存 |
+| 完整后台流程 | **真实库** | 后台要服务端校验口令、保存会话；演示源没有服务端 |
+
+而 e2e 框架**不给它启动的应用进程传环境变量**（实测：父进程设了 `VITE_SUPABASE_URL`，
+框架拉起的 vite 依然读到空值）。所以同一个 5173 不可能同时是两种数据源。
+
+### 跑 e2e 套件（演示源，不需要任何变量）
+
+```bash
+export PATH="/d/nodejs:$PATH"
+NODE_OPTIONS="" npx e2e run
+```
+
+### 跑后台验证（真实库，需要凭据）
+
+1. 先建管理员账号：把 `supabase/seed-admin.sql` 里的两个 `CHANGE_ME` 换成你的，粘进 SQL Editor 执行。
+2. 起开发服务器，**带上** `VITE_SUPABASE_URL` 与 `VITE_SUPABASE_ANON_KEY`。
+3. 跑脚本：
+
+```bash
+set ADMIN_USER=你的用户名
+set ADMIN_PASS=你的密码
+set NODE_PATH=<项目>/node_modules
+node tools/verify-admin.cjs
+```
+
+脚本会走一遍：未登录给登录框、错误密码给通用提示（不泄露用户名是否存在）、
+登录后三个面板都在、队列里有待审分类、分类列表有数据、码列表没有任何删除入口（D-11）、
+队列接受键盘操作、控制台错误为 0。**凭据只从环境变量读，不进仓库。**
+
+### 一条踩过的坑
+
+后台任务（不管是哪种 shell 的后台执行）有**约 2 分钟上限**。开发服务器跑到 2 分钟会被掐，
+e2e 跑到一半就会 `ERR_CONNECTION_REFUSED`，看起来像测试挂了。
+让 e2e 自己起服务器（`reuseExisting: true` 下没服务它自己起）就没有这个问题。
