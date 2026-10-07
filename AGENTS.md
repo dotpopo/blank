@@ -22,8 +22,13 @@
 - **管理员账号由用户自己建**(`supabase/seed-admin.sql`), 仓库里不放任何凭据。
 - e2e: `NODE_OPTIONS="" npx e2e run` → 18 个用例。后台完整流程走 `tools/verify-admin.cjs`。
   为什么分开, 见 `docs/spec/testing.md`。
-- 已知待办(不在 T00 到 T11 范围内): 后台的「改已通过分类的有效期」缺一个 RPC;
-  两个 `VITE_` 前缀的密钥建议改名去掉前缀。
+- 三个迁移都已在 Supabase 执行: 0001(52 条命令) / 0002(17 条) / 0003(4 条)。
+- **`vite.config.ts` 里有一道 `VITE_` 白名单**: 只有 `VITE_SUPABASE_URL` 与
+  `VITE_SUPABASE_ANON_KEY` 能进前端产物, 其余 `VITE_` 变量一律 define 成 `undefined`。
+  新增前端可用的 `VITE_` 变量必须显式加白名单。
+- 用户侧还剩两件(我做不了): 给 `VITE_SUPABASE_SERVICE_ROLE` 与 `VITE_SUPABASE_YOUWARE_CONN`
+  改名去掉 `VITE_` 前缀(白名单已经兜住了, 但改名才是根治);
+  以及跑 `supabase/seed-admin.sql` 建他自己的管理员账号。
 
 ## 设计读法与三个旋钮
 
