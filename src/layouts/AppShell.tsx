@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import { isDemoSource, resetDemoData } from "../data";
+import { isDemoSource, resetLocalState, sourceLabel } from "../data";
 import { Tag } from "../components/ui";
 
 const NAV = [
@@ -77,21 +77,20 @@ export default function AppShell() {
       <footer className="mt-20 border-t border-line">
         <div className="mx-auto flex max-w-[1120px] flex-col gap-3 px-5 py-8 text-xs text-dim sm:flex-row sm:items-center sm:justify-between">
           <p className="leading-relaxed">
-            匿名共享，不记录身份。领取与贡献都在你自己的浏览器里计数，每个应用每天各 3 次。{isDemoSource && " 当前展示的是演示数据，存在本地浏览器里。"}
+            匿名共享，不记录身份。领取与贡献都在你自己的浏览器里计数，每个应用每天各 3 次。当前数据源：{sourceLabel}。
           </p>
           <div className="flex shrink-0 items-center gap-4">
-            {isDemoSource && (
-              <button
-                type="button"
-                onClick={() => {
-                  resetDemoData();
-                  window.location.reload();
-                }}
-                className="rounded-control px-1 py-0.5 text-xs text-dim underline decoration-line-strong underline-offset-4 transition-colors duration-150 ease-out hover:text-ink"
-              >
-                重置演示数据
-              </button>
-            )}
+            <button
+              type="button"
+              data-testid="reset-local"
+              onClick={() => {
+                resetLocalState();
+                window.location.reload();
+              }}
+              className="rounded-control px-1 py-0.5 text-xs text-dim underline decoration-line-strong underline-offset-4 transition-colors duration-150 ease-out hover:text-ink"
+            >
+              {isDemoSource ? "重置演示数据" : "重置本机计数"}
+            </button>
             <Link
               to="/admin"
               className="rounded-control px-1 py-0.5 text-xs text-dim underline decoration-line-strong underline-offset-4 transition-colors duration-150 ease-out hover:text-ink"

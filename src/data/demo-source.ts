@@ -11,6 +11,7 @@ import {
   type Trend,
   type TrendPoint,
 } from "../types/domain";
+import { quotaFor, spend } from "./quota";
 import { PoolError, type ClaimOptions, type PoolSource } from "./seam";
 
 /**
@@ -31,8 +32,6 @@ import { PoolError, type ClaimOptions, type PoolSource } from "./seam";
 
 // 换种子结构时同步升版本号, 免得浏览器里留着旧结构的演示数据
 const POOL_KEY = "shuixian.demo.pool.v4";
-const QUOTA_KEY = "shuixian.demo.quota.v4";
-const PER_DAY = 3;
 const TTL_WARN_HOURS = 24;
 /** 演示数据的回溯天数。大于它, 大盘会如实说「这个区间只有 N 天有数据」 */
 const HISTORY_DAYS = 12;
@@ -207,48 +206,10 @@ function persist(): void {
 export function resetDemoData(): void {
   state = seedState();
   persist();
-  write(QUOTA_KEY, "{}");
 }
 
 /* ---------- 规则 1: 配额 ---------- */
-
-type Bucket = { claim: number; contribute: number; roll: number };
-type QuotaStore = Record<string, Bucket>;
-
-function bucketKey(appId: string): string {
-  return `${appId}|${dayKeyOf(new Date())}`;
-}
-
-function readQuota(): QuotaStore {
-  const raw = read(QUOTA_KEY);
-  if (!raw) return {};
-  try {
-    return JSON.parse(raw) as QuotaStore;
-  } catch {
-    return {};
-  }
-}
-
-function getBucket(store: QuotaStore, appId: string): Bucket {
-  return store[bucketKey(appId)] ?? { claim: 0, contribute: 0, roll: 0 };
-}
-
-function spend(appId: string, kind: keyof Bucket): void {
-  const store = readQuota();
-  const bucket = getBucket(store, appId);
-  if (bucket[kind] >= PER_DAY) {
-    throw new PoolError("QUOTA_EXCEEDED", `「${appName(appId)}」今天这项已经用满 ${PER_DAY} 次了`);
-  }
-  bucket[kind] += 1;
-  store[bucketKey(appId)] = bucket;
-  write(QUOTA_KEY, JSON.stringify(store));
-}
-
-function tomorrow(): string {
-  const d = new Date();
-  d.setHours(24, 0, 0, 0);
-  return d.toISOString();
-}
+// 配额是浏览器本地的事, 和适配器无关, 两个适配器共用 ./quota.ts
 
 /* ---------- 规则 2: 同应用内去重 ---------- */
 
@@ -340,7 +301,7 @@ export function createDemoSource(): PoolSource {
 
       return {
         available: pool.length,
-        appsWithStock: new Set(pool.map((c) => c.appId)).size,
+        approvedApps: SEED_APPS.filter((a) => a.status === "approved").length,
         // 这两个数字是对事件流当天聚合出来的, 不是写死的
         addedToday: codes.filter((c) => dayKeyOf(Date.parse(c.createdAt)) === today).length,
         claimedToday: codes.filter(
@@ -358,14 +319,7 @@ export function createDemoSource(): PoolSource {
     },
 
     async quota(appId: string): Promise<Quota> {
-      const bucket = getBucket(readQuota(), appId);
-      return {
-        claimLeft: Math.max(0, PER_DAY - bucket.claim),
-        contributeLeft: Math.max(0, PER_DAY - bucket.contribute),
-        rollLeft: Math.max(0, PER_DAY - bucket.roll),
-        perDay: PER_DAY,
-        resetsAt: tomorrow(),
-      };
+      return quotaFor(appId);
     },
 
     async trend(days: number): Promise<Trend> {
@@ -482,7 +436,7 @@ export function createDemoSource(): PoolSource {
         candidate = weightedPick(scoped);
       }
 
-      spend(candidate.appId, "claim");
+      spend(candidate.appId, "claim", appName(candidate.appId));
       // 领走即从池子里消失, 这是 D-2 的对外行为
       candidate.claimedAt = new Date().toISOString();
       persist();
@@ -501,7 +455,7 @@ export function createDemoSource(): PoolSource {
         throw new PoolError("EMPTY_POOL", "池子里现在没有可摇的邀请码");
       }
       const picked = weightedPick(pool);
-      spend(picked.appId, "roll");
+      spend(picked.appId, "roll", appName(picked.appId));
       picked.claimedAt = new Date().toISOString();
       persist();
       return {
@@ -526,7 +480,7 @@ export function createDemoSource(): PoolSource {
         throw new PoolError("DUPLICATE_CODE", `「${app.name}」的池子里已经有这串码了`);
       }
 
-      spend(app.id, "contribute");
+      spend(app.id, "contribute", app.name);
       load().codes.push({
         id: `c_${app.id}_${Date.now().toString(36)}`,
         appId: app.id,

@@ -27,7 +27,7 @@ type ScreenFixture = {
 
 async function freshStart(app: AppFixture, screen: ScreenFixture) {
   await app.open("/");
-  await screen.getByRole("button", "重置演示数据").tap();
+  await screen.getByTestId("reset-local").tap();
   await expect(screen.getByTestId("water-level")).toHaveText(WATER);
 }
 

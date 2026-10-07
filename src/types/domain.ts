@@ -12,11 +12,16 @@ export type AppStatus = z.infer<typeof appStatusSchema>;
 export const appSchema = z.object({
   id: z.string(),
   name: z.string(),
-  slug: z.string(),
-  status: appStatusSchema,
-  /** 这个分类下邀请码的默认有效期(天)。邀请码没单独指定就取它。 */
+  /** 这个分类下邀请码的默认有效期(天)。邀请码没单独指定就取它 */
   defaultTtlDays: z.number().int().positive(),
-  createdAt: z.string(),
+  /** 审批状态。真实库的 list_apps 只返回已通过的, 所以是可选的 */
+  status: appStatusSchema.optional(),
+  /** 归一化键。真实库的 list_apps 不返回它, 前端按同样规则算, 所以是可选的 */
+  slug: z.string().optional(),
+  /** 真实库的 list_apps 不返回创建时间 */
+  createdAt: z.string().optional(),
+  /** 当前可领的数量。只有 list_apps 会给 */
+  poolCount: z.number().int().nonnegative().optional(),
 });
 export type App = z.infer<typeof appSchema>;
 
@@ -37,8 +42,8 @@ export type ClaimSlot = z.infer<typeof claimSlotSchema>;
 export const poolSummarySchema = z.object({
   /** 池子里还剩多少可领的码。这是全站最大的那个数字 */
   available: z.number().int().nonnegative(),
-  /** 有货的分类数 */
-  appsWithStock: z.number().int().nonnegative(),
+  /** 已通过审批的分类数 */
+  approvedApps: z.number().int().nonnegative(),
   claimedToday: z.number().int().nonnegative(),
   addedToday: z.number().int().nonnegative(),
 });

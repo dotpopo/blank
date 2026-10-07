@@ -94,7 +94,7 @@ function SlotCard({
 }: {
   slot: ClaimSlot;
   claimed?: ClaimedCode;
-  onClaim: (slotId: string) => void;
+  onClaim: (slotId: string, appId: string) => void;
   busy: boolean;
 }) {
   const urgent = slot.hoursLeft < TTL_WARN_HOURS;
@@ -124,7 +124,7 @@ function SlotCard({
             variant="secondary"
             busy={busy}
             aria-label={`领取 ${slot.appName} 的邀请码`}
-            onClick={() => onClaim(slot.id)}
+            onClick={() => onClaim(slot.id, slot.appId)}
             className="w-full"
           >
             领取
@@ -364,7 +364,7 @@ export default function Home() {
                   slot={slot}
                   claimed={claimedInGrid[slot.id]}
                   busy={busy === "claim" && pendingSlot === slot.id}
-                  onClaim={(slotId) => runAction("claim", { slotId })}
+                  onClaim={(slotId, appId) => runAction("claim", { slotId, appId })}
                 />
               ))}
             </div>
