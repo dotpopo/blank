@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "e2e run"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
@@ -29,13 +30,17 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@ai-sdk/openai-compatible": "^3.0.65",
+    "@e2e-dev/web": "^0.13.0",
     "@types/matter-js": "^0.20.0",
     "@types/node": "^24.0.14",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.5.2",
     "@youware/vite-plugin-react": "^1.0.3",
+    "ai": "^7.0.0",
     "autoprefixer": "^10.4.21",
+    "e2e": "^0.18.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.8.3",
