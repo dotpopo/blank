@@ -26,7 +26,6 @@ const llm = createOpenAICompatible({
 });
 
 const APP_URL = process.env.APP_URL ?? "http://127.0.0.1:5173";
-const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 
 export default {
   agents: {
@@ -52,9 +51,20 @@ export default {
       app: {
         url: APP_URL,
         // The runner starts Vite, waits for APP_URL, and stops it when the run ends.
+        //
+        // Do NOT use `executable: 'npm'` / `'npm.cmd'` here: the runner spawns
+        // without a shell, and Node refuses to spawn .cmd/.bat directly on
+        // Windows (spawn EINVAL). Running Vite's JS entry with the same node
+        // that runs e2e sidesteps that and stays portable.
         command: {
-          executable: npm,
-          args: ["run", "dev"],
+          executable: process.execPath,
+          args: [
+            "node_modules/vite/bin/vite.js",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "5173",
+          ],
           reuseExisting: true,
           log: ".e2e/logs/app.log",
         },
