@@ -13,20 +13,20 @@
 
 ## 交付物
 
-- [ ] `supabase/migrations/0001_init.sql`(或等价的可粘贴 SQL),包含:
+- [x] `supabase/migrations/0001_init.sql`(或等价的可粘贴 SQL),包含:
   - `apps` / `invite_codes` / `admins` / `pool_events` 四张表(字段见 spec 第 6 节)
   - 索引: `invite_codes(status, expires_at)`, `invite_codes(app_id, status)`,
     `pool_events(occurred_at)`, `apps(status, submitted_at desc)`
   - `invite_codes.code_hash` 唯一索引(去重,见 spec 11.5)
   - 扩展: `pgcrypto`(bcrypt 用)
-- [ ] **RLS 策略**: 四张表**全部 enable RLS**,并且**不给 anon 任何直接 SELECT/INSERT/UPDATE/DELETE 权限**。
+- [x] **RLS 策略**: 四张表**全部 enable RLS**,并且**不给 anon 任何直接 SELECT/INSERT/UPDATE/DELETE 权限**。
       所有访问只经由 RPC。这是 D1。
-- [ ] RPC 骨架(签名 + `SECURITY DEFINER` + `search_path` 固定),业务体可以留 TODO:
+- [x] RPC 骨架(签名 + `SECURITY DEFINER` + `search_path` 固定),业务体可以留 TODO:
       `pool_summary` / `latest_available` / `claim_code` / `roll_dice` /
       `contribute_code` / `submit_app` / `pool_trend` /
       `admin_login` / `admin_review_app` / `admin_remove_code` / `admin_pending_apps`
-- [ ] `GRANT EXECUTE` 只给需要的角色。`admin_*` 系列**不给 anon**,或强制要求 token 参数。
-- [ ] 每个 RPC 的**错误码**清单(用 `raise exception` 的 `errcode` 或约定前缀),前端 T03 直接消费。
+- [x] `GRANT EXECUTE` 只给需要的角色。`admin_*` 系列**不给 anon**,或强制要求 token 参数。
+- [x] 每个 RPC 的**错误码**清单(用 `raise exception` 的 `errcode` 或约定前缀),前端 T03 直接消费。
 
 ## 关键实现约束
 

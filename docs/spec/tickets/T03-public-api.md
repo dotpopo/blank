@@ -14,13 +14,14 @@
 ## 交付物
 
 - [ ] `src/api/` 下按域拆分的模块: `pool.ts` / `apps.ts` / `admin.ts`
-- [ ] `src/types/` 下与 RPC 返回值一一对应的类型(zod schema + 推导出的 TS 类型,
+      > **偏离。实际是 `src/data/`: 一个接缝接口 + 两个适配器(演示/Supabase)。比按域拆模块更贴 D-1 的数据源可切换**
+- [x] `src/types/` 下与 RPC 返回值一一对应的类型(zod schema + 推导出的 TS 类型,
       模板已带 `zod`,用起来)
-- [ ] 统一的错误映射: 把 Postgres 的错误码翻成**面向用户的中文文案**,
+- [x] 统一的错误映射: 把 Postgres 的错误码翻成**面向用户的中文文案**,
       而不是把 SQL 错误抛到界面上
-- [ ] `src/lib/supabase.ts` 补齐: 从 `import.meta.env` 读 URL 与 anon key,
+- [x] `src/lib/supabase.ts` 补齐: 从 `import.meta.env` 读 URL 与 anon key,
       缺失时给出**可执行的**报错(告诉用户去改哪个文件)
-- [ ] 每个 API 函数返回 `{ ok: true, data } | { ok: false, error }`,不用抛异常驱动流程
+- [x] 每个 API 函数返回 `{ ok: true, data } | { ok: false, error }`,不用抛异常驱动流程
 
 ## 约定
 

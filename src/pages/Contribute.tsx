@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { pool, PoolError } from "../data";
+import { pool, PoolError, subscribeQuota } from "../data";
 import { contributeInputSchema, submitAppInputSchema } from "../types/domain";
 import type { App, Quota } from "../types/domain";
 import { Button, Callout, Field, Tag, TextInput } from "../components/ui";
@@ -40,6 +40,9 @@ export default function Contribute() {
 
   const selected = apps.find((a) => a.id === appId);
 
+  const [quotaTick, setQuotaTick] = useState(0);
+  useEffect(() => subscribeQuota(() => setQuotaTick((n) => n + 1)), []);
+
   useEffect(() => {
     if (!appId) return;
     let alive = true;
@@ -50,7 +53,7 @@ export default function Contribute() {
     return () => {
       alive = false;
     };
-  }, [appId]);
+  }, [appId, quotaTick]);
 
   async function onContribute(e: React.FormEvent) {
     e.preventDefault();

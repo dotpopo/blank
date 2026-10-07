@@ -12,13 +12,13 @@
 
 ## 交付物
 
-- [ ] 分支 `feat/invite-pool` 存在,`main` 保持干净。
-- [ ] 依赖安装完成,`npm run dev` 能起服务(此时页面仍是空的,正常)。
-- [ ] `AGENTS.md` 写在仓库根: 记录本项目的**常驻约定**(技术栈、RPC 优先、无 em-dash、
+- [x] 分支 `feat/invite-pool` 存在,`main` 保持干净。
+- [x] 依赖安装完成,`npm run dev` 能起服务(此时页面仍是空的,正常)。
+- [x] `AGENTS.md` 写在仓库根: 记录本项目的**常驻约定**(技术栈、RPC 优先、无 em-dash、
       不用假数据、测试怎么跑、环境变量从哪来)。这份文件是新会话开局的 standing brief。
-- [ ] **设计读法**一行 + 三个旋钮的取值写进 `AGENTS.md`(见下)。
-- [ ] `.env.example` 补齐本项目需要的变量(不含真实密钥)。
-- [ ] 确认 `LLM_BASE_URL` / `LLM_KEY` / `LLM_MODEL_ID` 三个**用户级**环境变量在新 shell 里可见。
+- [x] **设计读法**一行 + 三个旋钮的取值写进 `AGENTS.md`(见下)。
+- [x] `.env.example` 补齐本项目需要的变量(不含真实密钥)。
+- [x] 确认 `LLM_BASE_URL` / `LLM_KEY` / `LLM_MODEL_ID` 三个**用户级**环境变量在新 shell 里可见。
 
 ## 设计读法(必须在写第一行 CSS 之前定下)
 

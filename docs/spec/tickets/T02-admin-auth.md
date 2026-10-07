@@ -25,16 +25,17 @@
 
 ## 交付物
 
-- [ ] `tools/password-hash.html`: **单文件**密码生成器。
+- [x] `tools/password-hash.html`: **单文件**密码生成器。
   - 输入明文 → 输出可直接粘贴进 SQL 的 `$2a$12$...`
   - 显示生成耗时(让用户感知 cost 12 的代价)
   - 提供现成的 `insert into admins (username, password_hash) values (...)` 语句
   - 不联网、不发请求、不写 localStorage
   - 页面顶部明确标注「本地工具,不要在公共电脑上使用」
-- [ ] `admin_login(p_username, p_password)` RPC 实现完成,返回短期 token(见 Q6)。
-- [ ] token 的签发与校验规则写进 spec 或 `AGENTS.md`:
+- [x] `admin_login(p_username, p_password)` RPC 实现完成,返回短期 token(见 Q6)。
+- [x] token 的签发与校验规则写进 spec 或 `AGENTS.md`:
       有效期、存储位置(`sessionStorage`)、失效方式。
 - [ ] `docs/spec/tickets/T02-admin-auth.md` 里补充**实际生成的示例哈希**(用一个测试密码),
+      > **未做。工单原意是留一个测试哈希做参考, 实际没补。要补的话用 tools/password-hash.html 生成一个即可**
       方便 T09 直接拿去做联调。
 
 ## 验收

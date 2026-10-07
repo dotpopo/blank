@@ -27,6 +27,22 @@ type QuotaStore = Record<string, Bucket>;
 
 const memory = new Map<string, string>();
 
+/**
+ * 存储到底能不能用。
+ * 隐私模式、或用户禁用了站点数据时会失败。这时候退回内存计数(功能不崩),
+ * 但必须如实告诉用户「这次计数不会保留」, 不能假装一切正常。
+ */
+export const storageAvailable: boolean = (() => {
+  try {
+    const probe = "shuixian.probe";
+    window.localStorage.setItem(probe, "1");
+    window.localStorage.removeItem(probe);
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
 function read(key: string): string | null {
   try {
     return window.localStorage.getItem(key);
@@ -114,4 +130,21 @@ export function spend(appId: string, kind: SpendKind, appLabel?: string): void {
 
 export function resetQuota(): void {
   write(QUOTA_KEY, "{}");
+}
+
+/**
+ * 订阅配额变化。
+ *
+ * `storage` 事件只在**别的**标签页改动时触发, 正好是我们要的场景:
+ * 两个标签页各算各的额度, 加起来就会超过每天 3 次。所以另一个标签页领了码,
+ * 这个标签页要把剩余次数重新读一遍。
+ *
+ * 返回取消订阅的函数。
+ */
+export function subscribeQuota(onChange: () => void): () => void {
+  const handler = (event: StorageEvent) => {
+    if (event.key === null || event.key === QUOTA_KEY) onChange();
+  };
+  window.addEventListener("storage", handler);
+  return () => window.removeEventListener("storage", handler);
 }

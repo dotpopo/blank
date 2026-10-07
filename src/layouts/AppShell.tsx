@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import { isDemoSource, resetLocalState, sourceLabel } from "../data";
+import { isDemoSource, resetLocalState, sourceLabel, storageAvailable } from "../data";
 import { Tag } from "../components/ui";
 
 const NAV = [
@@ -78,6 +78,7 @@ export default function AppShell() {
         <div className="mx-auto flex max-w-[1120px] flex-col gap-3 px-5 py-8 text-xs text-dim sm:flex-row sm:items-center sm:justify-between">
           <p className="leading-relaxed">
             匿名共享，不记录身份。领取与贡献都在你自己的浏览器里计数，每个应用每天各 3 次。当前数据源：{sourceLabel}。
+            {!storageAvailable && " 浏览器不让本站存数据（可能是隐私模式），这次的计数关掉页面就没了。"}
           </p>
           <div className="flex shrink-0 items-center gap-4">
             <button

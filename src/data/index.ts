@@ -6,7 +6,7 @@ import { createSupabaseSource } from "./supabase-source";
 
 export type { ClaimOptions, PoolErrorCode, PoolSource } from "./seam";
 export { PoolError } from "./seam";
-export { PER_DAY } from "./quota";
+export { PER_DAY, storageAvailable, subscribeQuota } from "./quota";
 export { TTL_WARN_HOURS } from "./demo-source";
 
 /**

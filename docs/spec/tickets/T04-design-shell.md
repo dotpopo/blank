@@ -19,15 +19,18 @@
 
 ## 交付物
 
-- [ ] `src/styles/tokens.css`(或 Tailwind theme 扩展): 颜色、字阶、间距、圆角、阴影、动效时长。
+- [x] `src/styles/tokens.css`(或 Tailwind theme 扩展): 颜色、字阶、间距、圆角、阴影、动效时长。
       **不使用 Tailwind 默认调色板**,必须是有意图的取值。
-- [ ] 字体策略: 中文字体栈明确(不默认 Inter),标题与正文的关系明确。
-- [ ] 布局外壳: `src/layouts/` 下一个 `AppShell`(页头、导航、页脚、主内容区宽度约束)。
+- [x] 字体策略: 中文字体栈明确(不默认 Inter),标题与正文的关系明确。
+- [x] 布局外壳: `src/layouts/` 下一个 `AppShell`(页头、导航、页脚、主内容区宽度约束)。
 - [ ] 四个**状态原语**: 加载 / 空 / 错误 / 额度耗尽。每个都是组件,后续页面复用。
+      > **部分。加载/空/错误是独立组件(Skeleton/EmptyState/Callout); 「额度耗尽」没做成原语, 是首页额度行上的一个文案态**
 - [ ] 基础控件: `Button`(含 primary/secondary/disabled/loading)、`Input`、`Modal`、`Toast`。
+      > **未做。贡献流程做成了独立页而不是模态; 结果反馈用内联结果条而不是 toast(不遮挡内容, 也更好读屏)**
       全部带 `:focus-visible` 与 aria 属性。
-- [ ] 导航: `/` 首页、`/dashboard` 大盘、`/admin` 后台。移动端折叠方案明确。
+- [x] 导航: `/` 首页、`/dashboard` 大盘、`/admin` 后台。移动端折叠方案明确。
 - [ ] 一个 `/kitchen-sink` 或 Storybook 式的**临时页面**,把所有原语铺出来看一遍(交付后可删)。
+      > **未做。原语直接在各页面用了, 没有单独铺一遍的临时页**
 
 ## 反 AI 味硬性约束
 

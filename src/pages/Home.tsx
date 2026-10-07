@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Check, Copy, Dices } from "lucide-react";
-import { isDemoSource, pool, PoolError, TTL_WARN_HOURS } from "../data";
+import { isDemoSource, pool, PoolError, subscribeQuota, TTL_WARN_HOURS } from "../data";
 import type { App, ClaimSlot, ClaimedCode, PoolSummary, Quota } from "../types/domain";
 import { Button, Callout, Chip, EmptyState, Skeleton, Tag } from "../components/ui";
 import { CountUp } from "../components/CountUp";
@@ -223,6 +223,10 @@ export default function Home() {
     };
   }, []);
 
+  // 别的标签页领了码, 这边的剩余次数要跟着变, 否则两个标签页加起来会超过每天 3 次
+  const [quotaTick, setQuotaTick] = useState(0);
+  useEffect(() => subscribeQuota(() => setQuotaTick((n) => n + 1)), []);
+
   const quotaAppId = selectedApp === "all" ? apps[0]?.id : selectedApp;
   useEffect(() => {
     if (!quotaAppId) return;
@@ -234,7 +238,7 @@ export default function Home() {
     return () => {
       alive = false;
     };
-  }, [quotaAppId]);
+  }, [quotaAppId, quotaTick]);
 
   const visibleSlots = useMemo(
     () => (slots ?? []).filter((s) => selectedApp === "all" || s.appId === selectedApp),
