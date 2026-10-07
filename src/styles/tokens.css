@@ -1,42 +1,55 @@
-/* 设计令牌: 极简中性
- *
- * 设计读法: 工具型 Web 产品主页, 面向匿名用户, 克制、可信、以数字为主角。
- * 三个旋钮: DESIGN_VARIANCE 4 / MOTION_INTENSITY 4 / VISUAL_DENSITY 5
- *
- * 三条锁定, 改任何组件前先看这里:
- *   1. 单一强调色。全站只有 --a 这一个冷色, 不做第二个强调色。
- *   2. 单一圆角体系。控件 8px, 面板 14px, 胶囊用 full。规则写在下面。
- *   3. 单一主题。跟随系统, 不按区块反转。所有颜色只从变量取, 不写死。
- */
+/* =============================================================================
+   设计令牌 · 水线
+   =============================================================================
+   设计读法: 工具型 Web 产品主页, 面向匿名用户。
+   设计概念: 「纸与水的分界」。上面是纸 (空气), 下面是水 (池子),
+   水位数字不是贴在页面上的文字, 它是这条线上的读数。
+
+   所以配色不是先挑色再套, 是从概念里长出来的:
+     - 纸 = 暖白, 带一点旧纸的黄。冷灰会显得像默认 SaaS 模板
+     - 水 = 深松墨青。不是默认蓝, 也不是参考页那个亮森林绿
+     - 唯一强调色就是水本身。全站找不到第二个彩色
+
+   三条锁定, 改任何组件前先看这里:
+     1. 单一强调色。全站只有 --a 这一族, 不做第二个强调色。
+     2. 单一圆角体系。控件 8px, 面板 14px, 胶囊用 full。
+     3. 单一主题。跟随系统, 不按区块反转。颜色只从变量取, 不写死。
+   ============================================================================= */
 
 :root {
   color-scheme: light;
 
-  /* 灰阶, 八个语义角色 */
-  --n-canvas: #f6f7f9;
-  --n-surface: #fcfcfd;
-  --n-raised: #f1f3f5;
-  --n-line: #e4e7ec;
-  --n-line-strong: #cfd4dc;
-  --n-text-dim: #6b7480;
-  --n-text: #2b3138;
-  --n-text-strong: #14181c;
+  /* 纸。八个语义角色, 名字和上一版一致, 所以换值就等于全站换肤 */
+  --n-canvas: #f4f0e7;
+  --n-surface: #fdfbf6;
+  --n-raised: #efe9dd;
+  --n-line: #e2dacb;
+  --n-line-strong: #cdc2ad;
+  --n-text-dim: #6d6759;
+  --n-text: #2a2d28;
+  --n-text-strong: #191d1c;
 
-  /* 唯一强调色: 冷蓝。水位的隐喻是水, 所以取蓝不取绿 */
-  --a-tint: #eef3fe;
-  --a-tint-2: #dbe6ff;
-  --a-line: #b9cef8;
-  --a-mid: #6b96f5;
-  --a: #3a6fe8;
-  --a-strong: #2a55c9;
-  --a-ink: #16305f;
-  --a-on: #ffffff;
+  /* 水。唯一强调色, 从深到浅 */
+  --a-tint: #e7f0ed;
+  --a-tint-2: #cfe2dc;
+  --a-line: #a6c7be;
+  --a-mid: #2f8476;
+  --a: #1d5a50;
+  --a-strong: #123a34;
+  --a-ink: #0d2f2a;
+  --a-on: #fdfbf6;
 
-  /* 功能色。只表达真实状态, 不当装饰用 */
+  /* 水面专用的四个层次。深水 -> 水面 -> 浪尖 */
+  --w-deep: #0a2320;
+  --w-mid: #123f39;
+  --w-top: #1d5a50;
+  --w-crest: #4e9b8d;
+
+  /* 功能色。只表达真实状态, 不当装饰 */
   --warn: #8a5d0d;
-  --warn-tint: #fdf5e4;
-  --danger: #a92f2a;
-  --danger-tint: #fdeeed;
+  --warn-tint: #f7ecd6;
+  --danger: #a8352c;
+  --danger-tint: #fbebe7;
 
   /* 圆角: 控件 8px, 面板 14px, 胶囊 full */
   --r-control: 8px;
@@ -47,41 +60,50 @@
   --z-overlay: 50;
   --z-toast: 60;
 
-  /* 动效。MOTION_INTENSITY 4: 只服务状态变化, 不做叙事 */
+  /* 动效。只服务状态变化与水面, 不做叙事 */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --dur: 180ms;
+  /* 水面漂移的周期。两条波纹速度不同, 形成视差 */
+  --wave-front: 13s;
+  --wave-back: 21s;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
 
-    --n-canvas: #0e1114;
-    --n-surface: #151a1f;
-    --n-raised: #1c2228;
-    --n-line: #262e36;
-    --n-line-strong: #38424c;
-    --n-text-dim: #8b95a1;
-    --n-text: #c8cfd7;
-    --n-text-strong: #f2f5f7;
+    /* 暗色也是暖的, 不是纯黑。冷黑会让整站失去纸感 */
+    --n-canvas: #14130f;
+    --n-surface: #1b1a15;
+    --n-raised: #232118;
+    --n-line: #2e2b22;
+    --n-line-strong: #423e32;
+    --n-text-dim: #8b8577;
+    --n-text: #cbc6ba;
+    --n-text-strong: #f4f1e8;
 
-    --a-tint: #16223a;
-    --a-tint-2: #1b2c4d;
-    --a-line: #2c4470;
-    --a-mid: #4f7ce0;
-    --a: #6b96f5;
-    --a-strong: #4f7ce0;
-    --a-ink: #cfe0ff;
-    --a-on: #0e1114;
+    --a-tint: #12241f;
+    --a-tint-2: #17332c;
+    --a-line: #2a5b52;
+    --a-mid: #3d9486;
+    --a: #4fa89a;
+    --a-strong: #3d9486;
+    --a-ink: #b7e2d8;
+    --a-on: #0d1a18;
 
-    --warn: #d9a94f;
-    --warn-tint: #2a2113;
-    --danger: #ef8b85;
-    --danger-tint: #33191a;
+    --w-deep: #061614;
+    --w-mid: #0d2b27;
+    --w-top: #16453f;
+    --w-crest: #4fa89a;
+
+    --warn: #d9ab55;
+    --warn-tint: #2b2214;
+    --danger: #ee8b83;
+    --danger-tint: #33201d;
   }
 }
 
-/* 动效降级: MOTION_INTENSITY 4 超过 3, 必须处理。非协商 */
+/* 动效降级。水面漂移与所有过渡一起停掉, 不保留「慢速播放」 */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

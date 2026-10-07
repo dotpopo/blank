@@ -6,6 +6,7 @@ export default {
       // 颜色全部指向 src/styles/tokens.css 里的 CSS 变量。
       // 组件里不要写死色值, 也不要写 dark: 变体, 主题由变量在暗色媒体查询里整体切换。
       colors: {
+        // 纸
         canvas: "var(--n-canvas)",
         surface: "var(--n-surface)",
         raised: "var(--n-raised)",
@@ -14,6 +15,7 @@ export default {
         dim: "var(--n-text-dim)",
         ink: "var(--n-text)",
         "ink-strong": "var(--n-text-strong)",
+        // 水 (唯一强调色)
         accent: {
           DEFAULT: "var(--a)",
           tint: "var(--a-tint)",
@@ -23,6 +25,13 @@ export default {
           strong: "var(--a-strong)",
           ink: "var(--a-ink)",
           on: "var(--a-on)",
+        },
+        // 水面的四个层次
+        water: {
+          deep: "var(--w-deep)",
+          mid: "var(--w-mid)",
+          top: "var(--w-top)",
+          crest: "var(--w-crest)",
         },
         warn: { DEFAULT: "var(--warn)", tint: "var(--warn-tint)" },
         danger: { DEFAULT: "var(--danger)", tint: "var(--danger-tint)" },
@@ -42,6 +51,16 @@ export default {
           "Hiragino Sans GB",
           "Microsoft YaHei",
           "sans-serif",
+        ],
+        // 只给数字用。衬线数字有读数感, 也让页面不像模板。
+        // 不给中文标题用, 因为中文衬线在 Windows 上会掉到宋体, 大字很旧。
+        display: [
+          "Georgia",
+          "Iowan Old Style",
+          "Times New Roman",
+          "Songti SC",
+          "Source Han Serif SC",
+          "serif",
         ],
         mono: [
           "ui-monospace",

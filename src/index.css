@@ -36,4 +36,35 @@
   .nums {
     font-variant-numeric: tabular-nums;
   }
+
+  /* 大数字。衬线 + 等宽, 像仪表读数而不是网页标题 */
+  .num-display {
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", "Songti SC",
+      "Source Han Serif SC", serif;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+    letter-spacing: -0.01em;
+  }
+
+  /*
+   * 水面漂移。
+   * 位移用的是 SVG 用户单位 (viewBox 单位), 不是屏幕像素,
+   * 所以图形缩放时波纹速度依然对得上, 不会因为容器变宽而错位。
+   * 一个周期正好 600 单位, 平移 600 就是无缝循环。
+   */
+  .wave-front {
+    animation: wave-drift var(--wave-front) linear infinite;
+  }
+  .wave-back {
+    animation: wave-drift var(--wave-back) linear infinite reverse;
+  }
+}
+
+@keyframes wave-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-600px);
+  }
 }

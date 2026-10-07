@@ -222,7 +222,7 @@ export default function Dashboard() {
           <section className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-panel border border-line bg-line sm:grid-cols-3">
             <div className="bg-surface px-5 py-4">
               <p className="text-xs text-dim">池子里现在有</p>
-              <p data-testid="metric-net" className="nums mt-1.5 text-2xl font-medium text-ink-strong">
+              <p data-testid="metric-net" className="num-display mt-1.5 text-3xl text-ink-strong">
                 {trend.netNow} 个
               </p>
               <p className="nums mt-1 text-xs text-dim">
@@ -232,11 +232,11 @@ export default function Dashboard() {
             <div className="bg-surface px-5 py-4">
               <p className="text-xs text-dim">一个码从入池到被领走</p>
               {trend.medianClaimMinutes === null ? (
-                <p data-testid="metric-median" className="mt-1.5 text-2xl font-medium text-dim">
+                <p data-testid="metric-median" className="num-display mt-1.5 text-3xl text-dim">
                   数据不足
                 </p>
               ) : (
-                <p data-testid="metric-median" className="nums mt-1.5 text-2xl font-medium text-ink-strong">
+                <p data-testid="metric-median" className="num-display mt-1.5 text-3xl text-ink-strong">
                   {formatDuration(trend.medianClaimMinutes)}
                 </p>
               )}
@@ -248,7 +248,7 @@ export default function Dashboard() {
             </div>
             <div className="bg-surface px-5 py-4">
               <p className="text-xs text-dim">今天白白过期</p>
-              <p data-testid="metric-expired" className="nums mt-1.5 text-2xl font-medium text-ink-strong">
+              <p data-testid="metric-expired" className="num-display mt-1.5 text-3xl text-ink-strong">
                 {trend.expiredToday} 个
               </p>
               <p className="mt-1 text-xs text-dim">没人领，就浪费掉了</p>

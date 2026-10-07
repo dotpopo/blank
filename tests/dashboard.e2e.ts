@@ -79,5 +79,5 @@ test("领走一个码，大盘的净水位跟着减一", async ({ app, screen })
   await expect(screen.getByTestId("result-code")).toHaveText(/^[A-Z]{2}-[A-Z0-9]{4}-[A-Z0-9]{4}$/);
 
   await app.open("/dashboard");
-  expect(await readCount(screen, "metric-net")).toBe(before - 1);
+  await expect(screen.getByTestId("metric-net")).toHaveText(`${before - 1} 个`);
 });

@@ -45,7 +45,10 @@ test("点一下就能拿到一个码，水位随之减一", async ({ app, screen
   await screen.getByRole("button", "领一个").tap();
 
   await expect(screen.getByTestId("result-code")).toHaveText(CODE);
-  expect(await waterLevel(screen)).toBe(before - 1);
+  // 数字是滚过去的, 所以要等它落到位, 不能读一次就断言
+  await expect(screen.getByTestId("water-level")).toHaveText(
+    new RegExp(`池子里还有 ${before - 1} 个邀请码`),
+  );
 });
 
 test("同一个分类领满 3 次之后被额度拦住", async ({ app, screen }) => {
